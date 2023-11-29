@@ -13,7 +13,7 @@ import (
 	"os"
 )
 
-func ConnectToDrive() {
+func ConnectToDrive(fileName *string) {
 	ctx := context.Background()
 	b, err := os.ReadFile("credentials.json")
 	if err != nil {
@@ -34,8 +34,7 @@ func ConnectToDrive() {
 		log.Fatalf("Unable to retrieve Drive client: %v", err)
 	}
 
-	filename := "lessson.webm"
-	file, err := os.Open(filename)
+	file, err := os.Open(*fileName)
 	info, _ := file.Stat()
 	if err != nil {
 		log.Fatalf("Warning: %v", err)

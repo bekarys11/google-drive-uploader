@@ -9,6 +9,8 @@ import (
 	"time"
 )
 
+var fileName *string // video file's location path
+
 func main() {
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
@@ -49,11 +51,12 @@ func waitForRecorder(w *fsnotify.Watcher) {
 
 			if e.Has(fsnotify.Write) {
 				time.Sleep(10 * time.Second)  // not reset immediately on write operation, because write op could be fired several times in 1 second
-				timer.Reset(20 * time.Second) // reset enough time for next write operation to occur
+				timer.Reset(10 * time.Second) // reset enough time for next write operation to occur
+				fileName = &e.Name
 			}
 		case <-timer.C: // if timer is up
 			log.Println("timer is up")
-			gdrive.ConnectToDrive()
+			gdrive.ConnectToDrive(fileName)
 		}
 	}
 }
