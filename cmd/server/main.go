@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/bekarys11/drive-uploader/pkg/gdrive"
 	"github.com/fsnotify/fsnotify"
 	"log"
 	"math"
@@ -42,7 +43,7 @@ func waitForRecorder(w *fsnotify.Watcher) {
 				return
 			}
 
-			if !e.Has(fsnotify.Create) && !e.Has(fsnotify.Write) {
+			if !e.Has(fsnotify.Create) && !e.Has(fsnotify.Write) { // if it is not create or write operation, then restart loop
 				continue
 			}
 
@@ -52,6 +53,7 @@ func waitForRecorder(w *fsnotify.Watcher) {
 			}
 		case <-timer.C: // if timer is up
 			log.Println("timer is up")
+			gdrive.ConnectToDrive()
 		}
 	}
 }
