@@ -56,6 +56,7 @@ func waitForRecorder(w *fsnotify.Watcher) {
 			}
 		case <-timer.C: // if timer is up
 			log.Println("timer is up")
+			timer.Reset(math.MaxInt64) // reset timer for next record
 			gdrive.ConnectToDrive(fileName)
 		}
 	}

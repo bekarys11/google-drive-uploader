@@ -34,16 +34,19 @@ func ConnectToDrive(fileName *string) {
 		log.Fatalf("Unable to retrieve Drive client: %v", err)
 	}
 
-	file, err := os.Open(*fileName)
-	info, _ := file.Stat()
-	if err != nil {
-		log.Fatalf("Warning: %v", err)
+	if err = uploadFile(srv, fileName); err != nil {
+		log.Fatalf("upload file error: %v", err)
 	}
+}
 
+func uploadFile(srv *drive.Service, fileName *string) error {
+	file, err := os.Open(*fileName)
 	if err != nil {
-		log.Fatalln(err)
+		return fmt.Errorf("unable to open file: %v", err)
 	}
 	defer file.Close()
+
+	info, _ := file.Stat()
 
 	// Create File metadata
 	f := &drive.File{Name: info.Name()}
@@ -51,10 +54,11 @@ func ConnectToDrive(fileName *string) {
 	// Create and upload the file
 	_, err = srv.Files.Create(f).Media(file).ProgressUpdater(func(now, size int64) { fmt.Printf("%d, %d\r", now, size) }).Do()
 	if err != nil {
-		log.Printf("Upload error: %v", err)
+		return fmt.Errorf("update service: %v", err)
 	}
 
 	log.Println("successfully uploaded")
+	return nil
 }
 
 // Retrieve a token, saves the token, then returns the generated client.
